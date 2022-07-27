@@ -10,21 +10,23 @@ if __name__ == "__main__":
     parser.add_argument("--dl_eval", default=False, action="store_true")
     parser.add_argument("--dl_train_strong", default=False, action="store_true")
     parser.add_argument("--dl_eval_strong", default=False, action="store_true")
+    parser.add_argument("--percent_from", default=0, type=int)
+    parser.add_argument("--percent_to", default=100, type=int)
     parser.add_argument("--seglist")
     parser.add_argument("--segid")
 
     args = parser.parse_args()
 
     if args.dl_balanced_train:
-        dl_audioset(args.save_path, split="balanced_train")
+        dl_audioset(args.save_path, split="balanced_train", percent_from=percent_from, percent_to=percent_to)
     if args.dl_unbalanced_train:
-        dl_audioset(args.save_path, split="unbalanced_train")
+        dl_audioset(args.save_path, split="unbalanced_train", percent_from=percent_from, percent_to=percent_to)
     if args.dl_eval:
-        dl_audioset(args.save_path, split="eval")
+        dl_audioset(args.save_path, split="eval", percent_from=percent_from, percent_to=percent_to)
     if args.dl_train_strong:
-        dl_audioset_strong(args.save_path, split="train")
+        dl_audioset_strong(args.save_path, split="train", percent_from=percent_from, percent_to=percent_to)
     if args.dl_eval_strong:
-        dl_audioset_strong(args.save_path, split="eval")
+        dl_audioset_strong(args.save_path, split="eval", percent_from=percent_from, percent_to=percent_to)
     if args.seglist is not None:
         dl_seglist(args.save_path, args.seglist)
     if args.segid is not None:

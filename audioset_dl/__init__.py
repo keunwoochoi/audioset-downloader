@@ -68,22 +68,31 @@ def download_ps(ytid, st_list, ed_list, save_path, desc=None):
             pbar.update()
 
 
-def dl_audioset_strong(save_path, split):
+def dl_audioset_strong(save_path, split, percent_from, percent_to):
     path = f"{save_path}/{split}_strong"
     os.makedirs(path, exist_ok=True)
     meta = pd.read_csv(f"audioset_dl/metadata/audioset_{split}_strong.tsv", sep="\t")
     segment_id = pd.Series(meta.segment_id.unique())
     ytid = segment_id.str[:11]
+    ytid = _select_id(ytid, percent_from, percent_to)
     start_time = segment_id.str[12:].astype(int)
     end_time = start_time + 10000
     download_ps(ytid, start_time, end_time, path, desc=f"dl_{split}_strong")
 
 
-def dl_audioset(save_path, split):
+def _select_id(ytid, percent_from: int, percent_to: int):
+    total = len(ytid)
+    idx_from = int(total * (percent_from / 100.))
+    idx_to = int(total * (percent_to / 100.))
+    return ytid[idx_from : idx_to]
+
+
+def dl_audioset(save_path, split, percent_from, percent_to):
     path = f"{save_path}/{split}"
     os.makedirs(path, exist_ok=True)
     meta = pd.read_csv(f"audioset_dl/metadata/{split}_segments.csv", header=2, quotechar='"', skipinitialspace=True)
     ytid = meta["# YTID"]
+    ytid = _select_id(ytid, percent_from, percent_to)
     start_time = (meta.start_seconds * 1000).astype(int)
     end_time = (meta.end_seconds * 1000).astype(int)
     download_ps(ytid, start_time, end_time, path, desc=f"dl_{split}")
