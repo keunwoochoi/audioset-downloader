@@ -48,7 +48,7 @@ def _download(x):
 
             }
         ],
-        # "postprocessor_args": ["-ss", str(start_dt), "-to", str(end_dt)],  # 이건 먹히지 않음.
+        # "postprocessor_args": ["-ss", str(start_dt), "-to", str(end_dt)],  # 이건 먹히지 않음. postprocessor_args 라는 키가 ffmpeg에 존재하지 않음
         "quiet": True,
         "no_mtime": True,
     }
