@@ -17,6 +17,9 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    percent_from = args.percent_from
+    percent_to = args.percent_to
+
     if args.dl_balanced_train:
         dl_audioset(args.save_path, split="balanced_train", percent_from=percent_from, percent_to=percent_to)
     if args.dl_unbalanced_train:
