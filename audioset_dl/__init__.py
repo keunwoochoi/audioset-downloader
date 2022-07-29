@@ -36,7 +36,7 @@ def _download(x):
 
 
 def download_ps(ytid, st_list, ed_list, save_path, desc=None):
-    with mp.Pool(processes=max(mp.cpu_count() // 3, 2)) as pool, tqdm(total=len(ytid), desc=desc) as pbar:
+    with mp.Pool(processes=max(mp.cpu_count(), 8)) as pool, tqdm(total=len(ytid), desc=desc) as pbar:
         for _ in tqdm(pool.imap(_download, zip(ytid, st_list, ed_list, [save_path] * len(ytid)))):
             pbar.update()
 
