@@ -85,12 +85,8 @@ def _download_audio(x):
         pass
 
 
-def download_ps(
-    ytid, st_list, ed_list, save_path, target, num_processes=None, desc=None
-):
-    with mp.Pool(processes=num_processes) as pool, tqdm(
-        total=len(ytid), desc=desc
-    ) as pbar:
+def download_ps(ytid, st_list, ed_list, save_path, target, num_processes=None, desc=None):
+    with mp.Pool(processes=num_processes) as pool, tqdm(total=len(ytid), desc=desc) as pbar:
         if target == "audio":
             for _ in tqdm(
                 pool.imap(
@@ -162,14 +158,10 @@ def dl_audioset(save_path, split, args):
     ytid = _select_id(ytid, percent_from, percent_to)
     start_time = (meta.start_seconds * 1000).astype(int)
     end_time = (meta.end_seconds * 1000).astype(int)
-    download_ps(
-        ytid, start_time, end_time, path, target, num_processes, desc=f"dl_{split}"
-    )
+    download_ps(ytid, start_time, end_time, path, target, num_processes, desc=f"dl_{split}")
 
 
 def dl_seglist(save_path, seglist_path, args):
-    percent_from = args.percent_from
-    percent_to = args.percent_to
     num_processes = args.num_processes
     target = args.target
 
@@ -179,6 +171,4 @@ def dl_seglist(save_path, seglist_path, args):
     ytid = segment_id.str[:11]
     start_time = segment_id.str[12:].astype(int)
     end_time = start_time + 10000
-    download_ps(
-        ytid, start_time, end_time, path, target, num_processes, desc="dl_seglist"
-    )
+    download_ps(ytid, start_time, end_time, path, target, num_processes, desc="dl_seglist")
