@@ -172,3 +172,30 @@ def dl_seglist(save_path, seglist_path, args):
     start_time = segment_id.str[12:].astype(int)
     end_time = start_time + 10000
     download_ps(ytid, start_time, end_time, path, target, num_processes, desc="dl_seglist")
+
+
+def dl_vggsound(save_path, split, args):
+    """
+    https://github.com/hche11/VGGSound
+
+    split: train or test
+    """
+    percent_from = args.percent_from
+    percent_to = args.percent_to
+    num_processes = args.num_processes
+    target = args.target
+
+    path = f"{save_path}/{split}"
+    os.makedirs(path, exist_ok=True)
+    meta = pd.read_csv(
+        f"audioset_dl/metadata/vggsound.csv",
+        header=0,
+        names=['segment_id', 'start_time_seconds', 'label', 'split']
+    )
+    meta = meta[meta['split'] == split]
+    segment_id = pd.Series(meta.segment_id.unique())
+    ytid = segment_id.str[:11]
+    ytid = _select_id(ytid, percent_from, percent_to)
+    start_time = (meta.start_time_seconds * 1000).astype(int)
+    end_time = start_time + 10000
+    download_ps(ytid, start_time, end_time, path, target, num_processes, desc=f"dl_vgg_{split}")
