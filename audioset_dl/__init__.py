@@ -7,7 +7,7 @@ from tqdm import tqdm
 from yt_dlp import YoutubeDL
 
 
-def _download(x):
+def _download_audio(x):
     ytid, start, end, out_dir,  = x
     start_dt, end_dt = dt.timedelta(milliseconds=start), dt.timedelta(milliseconds=end)
     ydl_opts = {
