@@ -33,10 +33,13 @@ def _download_audio(x):
         pass
 
 
-def download_ps(ytid, st_list, ed_list, save_path, desc=None):
+def download_ps(ytid, st_list, ed_list, save_path, target, desc=None):
     with mp.Pool(processes=max(mp.cpu_count(), 8)) as pool, tqdm(total=len(ytid), desc=desc) as pbar:
-        for _ in tqdm(pool.imap(_download, zip(ytid, st_list, ed_list, [save_path] * len(ytid))), total=len(ytid)):
-            pbar.update()
+        if target == 'audio':
+            for _ in tqdm(pool.imap(_download_audio, zip(ytid, st_list, ed_list, [save_path] * len(ytid))), total=len(ytid)):
+                pbar.update()
+        else:
+            pass
 
 
 def dl_audioset_strong(save_path, split, percent_from, percent_to):
