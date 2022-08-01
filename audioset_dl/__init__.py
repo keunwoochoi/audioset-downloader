@@ -10,11 +10,9 @@ from yt_dlp import YoutubeDL
 def _download(x):
     ytid, start, end, out_dir,  = x
     start_dt, end_dt = dt.timedelta(milliseconds=start), dt.timedelta(milliseconds=end)
-    # print(f"{'-' * 30} | {ytid} {start_dt} to {end_dt} | {'-' * 30}")
     ydl_opts = {
         "outtmpl": f"{out_dir}/[%(id)s]-[{start//1000}-{end//1000}].%(ext)s",
         "format": "bestaudio[ext=webm]/bestaudio/best",
-        # "format": "bestaudio/best",
         "external_downloader": "ffmpeg",
         "external_downloader_args": ["-ss", str(start_dt), "-to", str(end_dt), "-loglevel", "panic"],
         "postprocessors": [
