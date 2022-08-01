@@ -66,8 +66,8 @@ def _download_audio(x):
         pass
 
 
-def download_ps(ytid, st_list, ed_list, save_path, target, desc=None):
-    with mp.Pool(processes=max(mp.cpu_count(), 8)) as pool, tqdm(total=len(ytid), desc=desc) as pbar:
+def download_ps(ytid, st_list, ed_list, save_path, target, num_processes=None, desc=None):
+    with mp.Pool(processes=num_processes) as pool, tqdm(total=len(ytid), desc=desc) as pbar:
         if target == 'audio':
             for _ in tqdm(pool.imap(_download_audio, zip(ytid, st_list, ed_list, [save_path] * len(ytid))), total=len(ytid)):
                 pbar.update()
@@ -78,7 +78,19 @@ def download_ps(ytid, st_list, ed_list, save_path, target, desc=None):
             raise NotImplementedError(f'target {target} is not implemented yet.')
 
 
-def dl_audioset_strong(save_path, split, percent_from, percent_to):
+def _select_id(ytid, percent_from: int, percent_to: int):
+    total = len(ytid)
+    idx_from = int(total * (percent_from / 100.))
+    idx_to = int(total * (percent_to / 100.))
+    return ytid[idx_from : idx_to]
+
+
+def dl_audioset_strong(save_path, split, args):
+    percent_from = args.percent_from
+    percent_to = args.percent_to
+    num_processes = args.num_processes
+    target = args.target
+
     path = f"{save_path}/{split}_strong"
     os.makedirs(path, exist_ok=True)
     meta = pd.read_csv(f"audioset_dl/metadata/audioset_{split}_strong.tsv", sep="\t")
@@ -87,17 +99,15 @@ def dl_audioset_strong(save_path, split, percent_from, percent_to):
     ytid = _select_id(ytid, percent_from, percent_to)
     start_time = segment_id.str[12:].astype(int)
     end_time = start_time + 10000
-    download_ps(ytid, start_time, end_time, path, desc=f"dl_{split}_strong")
+    download_ps(ytid, start_time, end_time, path, target, num_processes, desc=f"dl_{split}_strong")
 
 
-def _select_id(ytid, percent_from: int, percent_to: int):
-    total = len(ytid)
-    idx_from = int(total * (percent_from / 100.))
-    idx_to = int(total * (percent_to / 100.))
-    return ytid[idx_from : idx_to]
+def dl_audioset(save_path, split, args):
+    percent_from = args.percent_from
+    percent_to = args.percent_to
+    num_processes = args.num_processes
+    target = args.target
 
-
-def dl_audioset(save_path, split, percent_from, percent_to):
     path = f"{save_path}/{split}"
     os.makedirs(path, exist_ok=True)
     meta = pd.read_csv(f"audioset_dl/metadata/{split}_segments.csv", header=2, quotechar='"', skipinitialspace=True)
@@ -105,14 +115,19 @@ def dl_audioset(save_path, split, percent_from, percent_to):
     ytid = _select_id(ytid, percent_from, percent_to)
     start_time = (meta.start_seconds * 1000).astype(int)
     end_time = (meta.end_seconds * 1000).astype(int)
-    download_ps(ytid, start_time, end_time, path, desc=f"dl_{split}")
+    download_ps(ytid, start_time, end_time, path, target, num_processes, desc=f"dl_{split}")
 
 
-def dl_seglist(save_path, seglist_path):
+def dl_seglist(save_path, seglist_path, args):
+    percent_from = args.percent_from
+    percent_to = args.percent_to
+    num_processes = args.num_processes
+    target = args.target
+
     path = f"{save_path}/seglist"
     os.makedirs(path, exist_ok=True)
     segment_id = pd.Series(open(seglist_path, "r").read().splitlines())
     ytid = segment_id.str[:11]
     start_time = segment_id.str[12:].astype(int)
     end_time = start_time + 10000
-    download_ps(ytid, start_time, end_time, path, desc="dl_seglist")
+    download_ps(ytid, start_time, end_time, path, target, num_processes, desc="dl_seglist")
