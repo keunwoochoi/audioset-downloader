@@ -29,6 +29,8 @@ if __name__ == "__main__":
         dl_audioset(args.save_path, split="eval", args=args)
     elif args.dl_train_strong:
         dl_audioset_strong(args.save_path, split="train", args=args)
+    elif args.dl_eval_strong:
+        dl_audioset_strong(args.save_path, split="eval", args=args)
     elif args.dl_vgg_train:
         dl_vggsound(args.save_path, split="train", args=args)
     elif args.dl_vgg_test:
